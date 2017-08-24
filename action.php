@@ -73,6 +73,19 @@ class action_plugin_preregister extends DokuWiki_Action_Plugin {
              msg('missing Real Name: please fill out all fields');
             return;
           }
+        
+          $alloweddomains = trim($this->getConf('allowed_domains'));
+          if (!empty($alloweddomains)) {
+            $alloweddomains = explode(',', $alloweddomains);
+            $alloweddomains = array_map('trim', $alloweddomains);
+            $alloweddomains = array_unique($alloweddomains);
+            $alloweddomains = array_filter($alloweddomains);
+            $domain = substr(strrchr($_POST['email'], "@"), 1);
+            if(!in_array($domain, $alloweddomains))  {
+              msg('Email address must be in approved domain');
+              return;
+            }
+          }
 
         if($this->captcha =='captcha') {         
             $captcha = $this->loadHelper('captcha', true);
